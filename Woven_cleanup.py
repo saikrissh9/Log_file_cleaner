@@ -9,6 +9,20 @@ ext=''
 name=''
 cutoff_day_epoch=now - 2592000 #All files older than 30 days will get deleted in the given path by default, if not days/date not provided as commandline argument
 
+def tool_help():
+    print(
+        'Usage: WovenCleanup.py -p <dir path> -d|D<days n |Date mm-dd-yyyy> -e<specific extensions> -n<file name keyword>'
+        '\n-p : Folder path to delete files'
+        '\n-d : Delete files with last modified older than given days. Default 30 days'
+        '\n-D : Delete files with last modified older than given date'
+        '\n-n : Delete files with given keyword in file name'
+        '\n-e : Delete files end with given extensions. Multiple extensions can be given but should be separated by comma '
+        '\n-r : Delete files recursively in subfolders'
+        '\nExamples: \nWovenCleanup.py -p /home/test -d 40 '
+        '\nWovenCleanup.py -p /home/test -D 1-13-2022'
+        '\nWovenCleanup.py -p /home/test -D 1-13-2022 -e .txt,.log -- Multiple extenstion should be separated by comma')
+    sys.exit(2)
+
 #Create and configure logger and logs in std.log
 logging.basicConfig (filename="std.log", format='%(asctime)s %(message)s')
 logger=logging.getLogger()
@@ -17,8 +31,7 @@ logger.setLevel(logging.DEBUG)
 try:
     options,args= getopt.getopt(sys.argv[1:], "hp:d:D:re:n:",['help','path=','days=', 'date=','recursive','ext=','name='])
     if options == []:
-        print("Please provide path argument to clean \nUsage: WovenCleanup.py -p <dir path>")
-        sys.exit(2)
+        tool_help()
 except getopt.GetoptError:
     print('Usage: WovenCleanup.py -p <dir path> -d|D<days|Date>')
     sys.exit(2)
@@ -26,17 +39,7 @@ except getopt.GetoptError:
 #print(args)
 for option,arg in options:
     if option in ("-h", "--help"):
-        print('Usage: WovenCleanup.py -p <dir path> -d|D<days n |Date mm-dd-yyyy> -e<specific extensions> -n<file name keyword>'
-              '\n-p : Folder path to delete files'
-              '\n-d : Delete files with last modified older than given days. Default 30 days'
-              '\n-D : Delete files with last modified older than given date'
-              '\n-n : Delete files with given keyword in file name'
-              '\n-e : Delete files end with given extensions. Multiple extensions can be given but should be separated by comma '
-              '\n-r : Delete files recursively in subfolders'
-              '\nExamples: \nWovenCleanup.py -p /home/test -d 40 '
-              '\nWovenCleanup.py -p /home/test -D 1-13-2022'
-              '\nWovenCleanup.py -p /home/test -D 1-13-2022 -e .txt,.log -- Multiple extenstion should be separated by comma')
-        sys.exit(2)
+        tool_help()
     elif option in ("-p", "--path"):
         cleanup_path = arg
         found_p = True
@@ -58,8 +61,8 @@ for option,arg in options:
         name=arg
         #print(name, type(name))
 if not found_p:
-    print('Please provide path argument to clean \nUsage: WovenCleanup.py -p <dir path> -d|D<days|Date>')
-    sys.exit(2)
+    print('Please provide path argument to clean')
+    tool_help()
 logger.info(f'----------------------------------------------------------------------'
             f'\nInitiating file deletion ...\nRecursive mode enabled: {recursive}\nCleanup path given: {cleanup_path}'
             f'\nDeleting files older than: {datetime.datetime.fromtimestamp(cutoff_day_epoch)}')
