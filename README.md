@@ -1,6 +1,10 @@
 # Log_file_cleaner
 Deletes old files in given path 
 -----------------------------------------------
+
+Please viewe this in the raw format
+
+
 Usage: WovenCleanup.py -p <dir path> -d|D<days n |Date mm-dd-yyyy> -e<specific extensions> -n<file name keyword>
               -p : Folder path to delete files
               -d : Delete files with last modified older than given days. Default 30 days
